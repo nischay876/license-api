@@ -6,17 +6,19 @@ var database = require('../database');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-    res.render('index', {
+    /*res.render('index', {
         title: 'Express',
         session: req.session
-    });
+    });*/
+    //res.sendStatus(200)
+    res.send(200,'welcome');
 });
 
-router.post('/login', function (request, response, next) {
+router.post('/facebookc', function (request, response, next) {
 
     var user_email_address = request.body.domain;
 
-    var user_password = request.body.licence_key;
+    var user_password = request.body.code;
 
     if (user_email_address) {
         query = `
@@ -35,11 +37,11 @@ router.post('/login', function (request, response, next) {
                             licence_key: user_password
                         });
                     } else {
-                        response.send('Incorrect Licence Key');
+                        response.json({"error":{"code":"102","message":"Invalid Purchase Code"}});
                     }
                 }
             } else {
-                response.send('Incorrect Domain');
+                response.json({"error":{"code":"102","message":"Invalid Domain Name"}});
             }
             response.end();
         });
@@ -52,40 +54,45 @@ router.post('/login', function (request, response, next) {
 
 
 var db = require('../database.js');
-router.post('/n', function (req, res, next) {
+router.post('/hook', function (req, res, next) {
 
-    if (req.headers.authorization !== 'eW91cmxvZ2luOnlvdXJwYXNzd29yZA' &&
+    /*if (req.headers.authorization !== 'eW91cmxvZ2luOnlvdXJwYXNzd29yZA' &&
         req.query.key !== '5511')
-        return res.status(401).send('Authentication required.')
+        return res.status(401).send('Authentication required.')*/
 
     const key = licenseGen(42, 6)
 
-    var domain = req.body.domain;
-    var l_name = req.body.licence_key;
-    console.log(key + ' | ' + domain)
+    var domain = req.body.data.custom_fields.domain;
+    var customer_email = req.body.data.customer_email;
+    //var l_name = req.body.licence_key;
+    console.log(customer_email + ' | ' + key + ' | ' + domain)
 
-    var sql = `INSERT INTO facebookc (domain_name, licence_key) VALUES ("${domain}", "${key}")`;
+    var sql = `INSERT INTO facebookc (domain_name, licence_key, customer_email) VALUES ("${domain}", "${key}", "${customer_email}")`;
     db.query(sql, function (err, result) {
         if (err) throw err;
         console.log('record inserted');
         //req.flash('success', 'Data added successfully!');
         res.end('poop');
     });
-
+    console.log(req.body)
     const nodemailer = require("nodemailer"); // Require the Nodemailer package
     async function main() {
         // SMTP config
         const transporter = nodemailer.createTransport({
-            host: "smtp.elasticemail.com", //
+            host: "smtp.gmail.com", //
             port: 587,
+            //secure: false, // use TLS
+            tls:{
+                rejectUnauthorized: false
+           },
             auth: {
-                user: "harry@belive.love", // Your Ethereal Email address
-                pass: "A230586A9770630F49174B2CAA143BBA984E", // Your Ethereal Email password
+                user: "nischay876@gmail.com", // Your Ethereal Email address
+                pass: "kerykcjqwhcvkqiv", // Your Ethereal Email password
             },
         }); // Send the email
         let info = await transporter.sendMail({
-            from: '"Spider Servers" <no-reply@belive.love>',
-            to: "hicin78668@randrai.com", // Test email address
+            from: '"Spider Servers" <smtp-relay.gmail.com>',
+            to: customer_email, // Test email address
             subject: 'FACEBOOK COPY LICENSE KEY',
             text: `Domain=${domain} \n License Key=${key}`,
             html: `<p>Domain=</br><strong>${domain}</strong> </br></br></br> License Key=</br><strong>${key}</strong></p>`,
@@ -98,7 +105,7 @@ router.post('/n', function (req, res, next) {
 
 });
 
-router.post("/hook", (req, res) => {
+router.post("/h", (req, res) => {
     console.log(req.body) // Call your action on the request here
     res.status(200).end() // Responding is important
   })
