@@ -6,12 +6,12 @@ var database = require('../database');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-    /*res.render('index', {
+    res.render('index', {
         title: 'Express',
         session: req.session
-    });*/
+    });
     //res.sendStatus(200)
-    res.send(200, 'welcome');
+    //res.send(200, 'welcome');
 });
 
 router.post('/facebookc', function (request, response, next) {
@@ -123,5 +123,73 @@ router.get('/logout', function (request, response, next) {
     response.redirect("/");
 
 });
+router.post('/editdomain', function (request, response, next) {
+
+    var prev_domain = request.body.prev_domain;
+
+    var new_domain = request.body.new_domain
+    var mysql = require('mysql');
+
+    var con = mysql.createConnection({
+        host: "139.162.226.125",
+        user: "nisch",
+        password: "55115511*",
+        database: "licence"
+      });
+      
+      con.connect(function(err) {
+        if (err) throw err;
+        var sql = `UPDATE facebookc SET domain_name = '${new_domain}' WHERE domain_name = '${prev_domain}'`;
+        con.query(sql, function (err, result) {
+          if (err) throw err;
+          console.log(result.affectedRows + " record(s) updated");
+          response.redirect("/");
+        });
+      });
+    /*var sql = `UPDATE facebookc SET domain_name = ${new_domain} WHERE domain_name = ${prev_domain}`;
+    db.query(sql, function (err, result) {
+        if (err) throw err;
+        console.log(result.affectedRows + " record(s) updated");
+    });*/
+
+
+});
+
+router.post('/login', function (request, response, next) {
+
+    var user_email_address = request.body.customer_email;
+
+    var licence_key = request.body.licence_key;
+
+    if (user_email_address && licence_key) {
+        query = `
+        SELECT * FROM facebookc 
+        WHERE customer_email = "${user_email_address}"
+        `;
+
+        database.query(query, function (error, data) {
+
+            if (data.length > 0) {
+                for (var count = 0; count < data.length; count++) {
+                    if (data[count].licence_key == licence_key) {
+                        request.session.user_id = data[count].user_id;
+
+                        response.redirect("/");
+                    } else {
+                        response.send('Incorrect Password');
+                    }
+                }
+            } else {
+                response.send('Incorrect Email Address');
+            }
+            response.end();
+        });
+    } else {
+        response.send('Please Enter Email Address and Password Details');
+        response.end();
+    }
+
+});
+
 
 module.exports = router;
