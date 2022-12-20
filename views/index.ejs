@@ -19,7 +19,9 @@
                 <div class="col-md-3">&nbsp;</div>
                 <div class="col-md-6">
                 <% if(session.user_id) { %>
-
+                    <div class="card">
+                        <div class="card-header">Change Domain</div>
+                        <div class="card-body">
                             <form method="post" action="/editdomain">
                                 <div class="mb-3">
                                     <label>Prevous Domain</label>
@@ -33,8 +35,9 @@
                                     <input type="submit" class="btn btn-primary" value="Submit" />
                                 </div>
                             </form>
-
-                        </br><a href="/logout" class="btn btn-primary">Logout</a>
+                        </div>
+                    </div>
+                        <center></br><a href="/logout" class="btn btn-primary">Logout</a></center>
 
                 <% } else { %>
 
