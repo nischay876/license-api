@@ -11,7 +11,7 @@ router.get('/', function (req, res, next) {
         session: req.session
     });*/
     //res.sendStatus(200)
-    res.send(200,'welcome');
+    res.send(200, 'welcome');
 });
 
 router.post('/facebookc', function (request, response, next) {
@@ -37,11 +37,21 @@ router.post('/facebookc', function (request, response, next) {
                             licence_key: user_password
                         });
                     } else {
-                        response.json({"error":{"code":"102","message":"Invalid Purchase Code"}});
+                        response.json({
+                            "error": {
+                                "code": "102",
+                                "message": "Invalid Purchase Code"
+                            }
+                        });
                     }
                 }
             } else {
-                response.json({"error":{"code":"102","message":"Invalid Domain Name"}});
+                response.json({
+                    "error": {
+                        "code": "102",
+                        "message": "Invalid Domain Name"
+                    }
+                });
             }
             response.end();
         });
@@ -79,15 +89,11 @@ router.post('/hookfacebookc', function (req, res, next) {
     async function main() {
         // SMTP config
         const transporter = nodemailer.createTransport({
-            host: "smtp.gmail.com", //
-            port: 587,
-            //secure: false, // use TLS
-            tls:{
-                rejectUnauthorized: false
-           },
+            host: process.env.SMTP_HOST, //
+            port: parseInt(process.env.SMTP_PORT),
             auth: {
-                user: "nischay876@gmail.com", // Your Ethereal Email address
-                pass: "kerykcjqwhcvkqiv", // Your Ethereal Email password
+                user: process.env.SMTP_USER, // Your Ethereal Email address
+                pass: process.env.SMTP_PASS, // Your Ethereal Email password
             },
         }); // Send the email
         let info = await transporter.sendMail({
@@ -108,7 +114,7 @@ router.post('/hookfacebookc', function (req, res, next) {
 router.post("/h", (req, res) => {
     console.log(req.body) // Call your action on the request here
     res.status(200).end() // Responding is important
-  })
+})
 
 router.get('/logout', function (request, response, next) {
 
