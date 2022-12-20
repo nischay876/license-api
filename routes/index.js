@@ -54,7 +54,7 @@ router.post('/facebookc', function (request, response, next) {
 
 
 var db = require('../database.js');
-router.post('/hook', function (req, res, next) {
+router.post('/hookfacebookc', function (req, res, next) {
 
     /*if (req.headers.authorization !== 'eW91cmxvZ2luOnlvdXJwYXNzd29yZA' &&
         req.query.key !== '5511')
